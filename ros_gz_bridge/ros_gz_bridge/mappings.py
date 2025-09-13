@@ -93,6 +93,7 @@ MAPPINGS = {
         Mapping('LaserScan', 'LaserScan'),
         Mapping('MagneticField', 'Magnetometer'),
         Mapping('NavSatFix', 'NavSat'),
+        Mapping('NavSatFix', 'NavSatWithCovariance'),
         Mapping('PointCloud2', 'PointCloudPacked'),
         Mapping('Range', 'LaserScan'),
     ],

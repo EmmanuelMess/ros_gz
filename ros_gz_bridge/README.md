@@ -57,6 +57,7 @@ The following message types can be bridged for topics:
 | sensor_msgs/msg/LaserScan                      | gz.msgs.LaserScan                   |
 | sensor_msgs/msg/MagneticField                  | gz.msgs.Magnetometer                |
 | sensor_msgs/msg/NavSatFix                      | gz.msgs.NavSat                      |
+| sensor_msgs/msg/NavSatFix                      | gz.msgs.NavSatWithCovariance        |
 | sensor_msgs/msg/PointCloud2                    | gz.msgs.PointCloudPacked            |
 | sensor_msgs/msg/Range                          | gz.msgs.LaserScan                   |
 | std_msgs/msg/Bool                              | gz.msgs.Boolean                     |

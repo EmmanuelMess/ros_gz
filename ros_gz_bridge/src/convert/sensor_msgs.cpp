@@ -584,6 +584,66 @@ convert_gz_to_ros(
 template<>
 void
 convert_ros_to_gz(
+  const sensor_msgs::msg::NavSatFix & ros_msg,
+  gz::msgs::NavSatWithCovariance & gz_msg)
+{
+  convert_ros_to_gz(ros_msg.header, (*gz_msg.mutable_header()));
+  gz_msg.set_latitude_deg(ros_msg.latitude);
+  gz_msg.set_longitude_deg(ros_msg.longitude);
+  gz_msg.set_altitude(ros_msg.altitude);
+  gz_msg.set_position_covariance();
+  
+  for (const auto & elem : ros_msg.position_covariance) {
+    gz_msg.mutable_position_covariance()->add_data(elem);
+  }
+  
+  gz_msg.set_position_covariance_type(ros_msg.position_covariance_type);
+  
+  gz_msg.set_frame_id(ros_msg.header.frame_id);
+
+  // Not supported in sensor_msgs::NavSatFix.
+  gz_msg.set_velocity_east(0.0);
+  gz_msg.set_velocity_north(0.0);
+  gz_msg.set_velocity_up(0.0);
+  
+  for (int i = 0; i < 9; i++) {
+    gz_msg.mutable_velocity_covariance()->add_data(0.0);
+  }
+  
+  gz_msg.set_velocity_covariance_type(sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN);
+}
+
+template<>
+void
+convert_gz_to_ros(
+  const gz::msgs::NavSatWithCovariance & gz_msg,
+  sensor_msgs::msg::NavSatFix & ros_msg)
+{
+  convert_gz_to_ros(gz_msg.header(), ros_msg.header);
+  ros_msg.header.frame_id = frame_id_gz_to_ros(gz_msg.frame_id());
+  ros_msg.latitude = gz_msg.latitude_deg();
+  ros_msg.longitude = gz_msg.longitude_deg();
+  ros_msg.altitude = gz_msg.altitude();
+  
+  int data_size = gz_msg.position_covariance().data_size();
+  if (data_size == 9) {
+    for (int i = 0; i < data_size; ++i) {
+      auto data = gz_msg.position_covariance().data()[i];
+      ros_msg.position_covariance[i] = data;
+    }
+  }
+
+  ros_msg.position_covariance_type = gz_msg.position_covariance_type();
+  
+  // Fix without augmentation
+  ros_msg.status.status = sensor_msgs::msg::NavSatStatus::STATUS_FIX;
+  // No reference service was used to create this position
+  ros_msg.status.service = 0;
+}
+
+template<>
+void
+convert_ros_to_gz(
   const sensor_msgs::msg::PointCloud2 & ros_msg,
   gz::msgs::PointCloudPacked & gz_msg)
 {
